@@ -7,6 +7,8 @@
   --bg-light: #f5f7fa;
   --bg-dark: #e1e5ec;
   --text-color: #333;
+  --success: #28a745;
+  --error: #dc3545;
 }
 
 * {
@@ -46,7 +48,6 @@ main {
   font-size: 3rem;
   font-weight: bold;
   color: var(--primary-dark);
-
   margin-bottom: var(--spacing-md);
 }
 
@@ -97,6 +98,82 @@ main {
   border: 2px solid var(--primary);
 }
 
+.timer-display {
+  text-align: center;
+  padding: var(--spacing-sm);
+  background: var(--bg-light);
+  border-radius: 8px;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--primary-dark);
+  border: 2px solid var(--accent);
+  margin-bottom: var(--spacing-sm);
+}
+
+.timer-display.time-up {
+  background: #f8d7da;
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.time-up-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.time-up-content {
+  background: white;
+  padding: var(--spacing-md);
+  border-radius: 10px;
+  text-align: center;
+  max-width: 400px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.time-up-content h2 {
+  font-size: 2.4rem;
+  color: var(--error);
+  margin-bottom: var(--spacing-sm);
+}
+
+.time-up-content p {
+  font-size: 1.6rem;
+  color: var(--text-color);
+  margin-bottom: var(--spacing-md);
+}
+
+.time-up-buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.try-again-button {
+  background-color: var(--primary);
+}
+
+.try-again-button:hover {
+  background-color: var(--primary-dark);
+}
+
+.home-button {
+  background-color: var(--accent);
+  color: var(--text-color);
+}
+
+.home-button:hover {
+  background-color: #e6b800;
+}
+
 .targets-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -109,7 +186,6 @@ main {
   gap: var(--spacing-sm);
   justify-content: center;
   border-radius: 8px;
-
   min-height: 12rem;
   border: 2px dashed gray;
   padding: var(--spacing-sm);
@@ -118,22 +194,16 @@ main {
 .target {
   background: var(--bg-dark);
   padding: var(--spacing-sm);
-
   border: 2px dashed gray;
   border-radius: 8px;
   min-height: 100px;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
-
   text-align: center;
-
-  transition:
-    border-color 0.2s,
-    background 0.2s;
+  transition: all 0.2s ease;
 }
 
 .target__name {
@@ -146,6 +216,7 @@ main {
 .target.drag-over {
   border-color: var(--accent);
   background: #fffbe6;
+  transform: scale(1.02);
 }
 
 .target.occupied {
@@ -159,7 +230,7 @@ main {
 }
 
 .target.correct {
-  border-color: #28a745;
+  border-color: var(--success);
   background: #d4edda;
   border-style: solid;
 }
@@ -169,7 +240,7 @@ main {
 }
 
 .target.incorrect {
-  border-color: #dc3545;
+  border-color: var(--error);
   background: #f8d7da;
   border-style: solid;
 }
@@ -181,8 +252,6 @@ main {
 .blocks-container.drag-over {
   border: 2px dashed var(--accent);
   background: #fffbe6;
-  padding: 10px;
-  border-radius: 8px;
 }
 
 .block {
@@ -193,30 +262,16 @@ main {
   cursor: grab;
   font-size: 1.4rem;
   max-width: 200px;
-  transition:
-    transform 0.2s,
-    opacity 0.2s;
+  transition: all 0.2s ease;
 }
 
 .block:active {
   cursor: grabbing;
 }
 
-.target .block {
-  cursor: pointer;
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
-}
-
-.target .block:hover {
-  transform: scale(1.02);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
 .block.locked {
   background: #d4edda;
-  border: 2px solid #28a745;
+  border: 2px solid var(--success);
   cursor: default;
   opacity: 0.9;
 }
@@ -224,6 +279,16 @@ main {
 .block.locked:hover {
   transform: none;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.target .block {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.target .block:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .dragging {
