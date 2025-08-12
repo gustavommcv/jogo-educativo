@@ -34,7 +34,6 @@ main {
   padding: var(--spacing-md);
 }
 
-/* --- Home Screen --- */
 .home__screen {
   background: white;
   padding: var(--spacing-md);
@@ -47,9 +46,10 @@ main {
   font-size: 3rem;
   font-weight: bold;
   color: var(--primary-dark);
+
+  margin-bottom: var(--spacing-md);
 }
 
-/* --- Buttons --- */
 .app-button {
   cursor: pointer;
   border: none;
@@ -67,7 +67,16 @@ main {
   background-color: var(--primary-dark);
 }
 
-/* --- Game Screen Layout --- */
+.app-button.disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.app-button.disabled:hover {
+  background-color: #ccc;
+}
+
 .game__container {
   display: flex;
   flex-direction: column;
@@ -75,6 +84,17 @@ main {
   background-color: white;
   padding: var(--spacing-md);
   border-radius: 8px;
+}
+
+.score-display {
+  text-align: center;
+  padding: var(--spacing-sm);
+  background: var(--bg-light);
+  border-radius: 8px;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--primary-dark);
+  border: 2px solid var(--primary);
 }
 
 .targets-container {
@@ -95,7 +115,6 @@ main {
   padding: var(--spacing-sm);
 }
 
-/* --- Targets --- */
 .target {
   background: var(--bg-dark);
   padding: var(--spacing-sm);
@@ -139,6 +158,26 @@ main {
   color: var(--primary-dark);
 }
 
+.target.correct {
+  border-color: #28a745;
+  background: #d4edda;
+  border-style: solid;
+}
+
+.target.correct .target__name {
+  color: #155724;
+}
+
+.target.incorrect {
+  border-color: #dc3545;
+  background: #f8d7da;
+  border-style: solid;
+}
+
+.target.incorrect .target__name {
+  color: #721c24;
+}
+
 .blocks-container.drag-over {
   border: 2px dashed var(--accent);
   background: #fffbe6;
@@ -146,7 +185,6 @@ main {
   border-radius: 8px;
 }
 
-/* --- Blocks --- */
 .block {
   background: white;
   padding: var(--spacing-sm);
@@ -166,7 +204,9 @@ main {
 
 .target .block {
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .target .block:hover {
@@ -174,7 +214,68 @@ main {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+.block.locked {
+  background: #d4edda;
+  border: 2px solid #28a745;
+  cursor: default;
+  opacity: 0.9;
+}
+
+.block.locked:hover {
+  transform: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
 .dragging {
   opacity: 0.7;
   transform: scale(1.05);
+}
+
+.final-screen {
+  background: white;
+  padding: var(--spacing-md);
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.final-title {
+  font-size: 3rem;
+  font-weight: bold;
+  color: var(--primary-dark);
+  margin-bottom: var(--spacing-sm);
+}
+
+.final-message {
+  font-size: 1.8rem;
+  color: var(--text-color);
+  margin-bottom: var(--spacing-md);
+}
+
+.final-score {
+  background: var(--bg-light);
+  padding: var(--spacing-md);
+  border-radius: 8px;
+  margin-bottom: var(--spacing-md);
+}
+
+.final-score h2 {
+  font-size: 2rem;
+  color: var(--primary-dark);
+  margin-bottom: var(--spacing-sm);
+}
+
+.score-number {
+  font-size: 3rem;
+  font-weight: bold;
+  color: var(--primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.score-percentage {
+  font-size: 2rem;
+  color: var(--text-color);
+  font-weight: bold;
 }
