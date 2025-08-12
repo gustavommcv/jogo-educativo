@@ -11,9 +11,20 @@
 
 <body>
   <main class="main">
-    <div class="home__container">
+    <!-- Home screen -->
+    <div class="home__screen" id="homeScreen">
       <h1 class="home__title">Titulo</h1>
+
       <button class="app-button" type="button">Iniciar</button>
+    </div>
+
+    <!-- Game screen -->
+    <div class="game__container" id="gameScreen" style="display: none">
+      <div class="targets-container" id="targetsContainer"></div>
+
+      <div class="blocks-container" id="blocksContainer"></div>
+
+      <button class="app-button check-button" type="button">Verificar</button>
     </div>
   </main>
 
