@@ -88,20 +88,30 @@ main {
   flex-wrap: wrap;
   gap: var(--spacing-sm);
   justify-content: center;
+  border-radius: 8px;
+
+  min-height: 12rem;
+  border: 2px dashed gray;
+  padding: var(--spacing-sm);
 }
 
 /* --- Targets --- */
 .target {
   background: var(--bg-dark);
   padding: var(--spacing-sm);
+
+  border: 2px dashed gray;
   border-radius: 8px;
   min-height: 100px;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: var(--spacing-sm);
+
   text-align: center;
-  border: 2px dashed transparent;
+
   transition:
     border-color 0.2s,
     background 0.2s;
