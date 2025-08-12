@@ -22,14 +22,10 @@ function startGame() {
   const blocksContainer = document.getElementById("blocksContainer");
   const checkButton = document.querySelector(".check-button");
 
-  // Constante para o tempo do jogo (fácil de alterar)
   const GAME_TIME_SECONDS = 60;
 
   let score = 0;
-  const maxScore = gameData.etapas.length; // Calcula dinamicamente baseado no JSON
-  
-  // Log para debug
-  console.log(`Jogo configurado com ${maxScore} etapas:`, gameData.etapas.map(e => e.nome));
+  const maxScore = gameData.etapas.length;
 
   const scoreDisplay = document.createElement("div");
   scoreDisplay.className = "score-display";
@@ -71,8 +67,6 @@ function startGame() {
     if (timerInterval) {
       clearInterval(timerInterval);
     }
-
-    console.log("Iniciando temporizador com", timeLeft, "segundos");
 
     timerInterval = setInterval(() => {
       timeLeft--;
@@ -121,9 +115,13 @@ function startGame() {
       if (block) {
         target.removeChild(block);
         blocksContainer.appendChild(block);
-        target.classList.remove("occupied", "correct", "incorrect");
-        
-        // Remove todas as classes e estados do bloco
+        target.classList.remove(
+          "occupied",
+          "correct",
+          "incorrect",
+          "was-correct",
+        );
+
         block.classList.remove("locked", "was-correct");
         block.draggable = true;
         block.style.cursor = "grab";
@@ -151,12 +149,11 @@ function startGame() {
 
   const checkAllTargetsFilled = () => {
     const targets = document.querySelectorAll(".target");
-    
-    // Verifica se o número de targets preenchidos é igual ao maxScore
+
     const filledCount = Array.from(targets).filter(
-      (target) => target.querySelector(".block") !== null
+      (target) => target.querySelector(".block") !== null,
     ).length;
-    
+
     const allFilled = filledCount === maxScore;
 
     checkButton.disabled = !allFilled;
@@ -183,8 +180,7 @@ function startGame() {
   const shuffleBlocks = () => {
     const blocks = Array.from(blocksContainer.children);
 
-    // Limpa todos os estados dos blocos antes de embaralhar
-    blocks.forEach(block => {
+    blocks.forEach((block) => {
       block.classList.remove("locked", "was-correct", "dragging");
       block.draggable = true;
       block.style.cursor = "grab";
@@ -252,8 +248,7 @@ function startGame() {
       if (existingBlock) {
         existingBlock.remove();
         blocksContainer.appendChild(existingBlock);
-        
-        // Limpa todos os estados do bloco existente
+
         existingBlock.classList.remove("locked", "was-correct", "dragging");
         existingBlock.draggable = true;
         existingBlock.style.cursor = "grab";
@@ -266,12 +261,11 @@ function startGame() {
         if (!block.classList.contains("locked")) {
           target.removeChild(block);
           blocksContainer.appendChild(block);
-          
-          // Limpa todos os estados do bloco
+
           block.classList.remove("locked", "was-correct", "dragging");
           block.draggable = true;
           block.style.cursor = "grab";
-          
+
           updateTargetState(target);
         }
       });
@@ -327,55 +321,54 @@ function startGame() {
               score++;
               target.classList.add("was-correct");
             }
-          } else {
-            allCorrect = false;
-            target.classList.add("incorrect");
-            target.classList.remove("correct");
+        } else {
+          allCorrect = false;
+          target.classList.add("incorrect");
+          target.classList.remove("correct");
 
-            setTimeout(() => {
-              target.removeChild(block);
-              blocksContainer.appendChild(block);
-              
-              // Limpa todos os estados do bloco incorreto
-              block.classList.remove("locked", "was-correct", "dragging");
-              block.draggable = true;
-              block.style.cursor = "grab";
-              
-              target.classList.remove("incorrect", "occupied");
-              updateTargetState(target);
-            }, 1000);
-          }
+          setTimeout(() => {
+            target.removeChild(block);
+            blocksContainer.appendChild(block);
+
+            block.classList.remove("locked", "was-correct", "dragging");
+            block.draggable = true;
+            block.style.cursor = "grab";
+
+            target.classList.remove("incorrect", "occupied");
+            updateTargetState(target);
+          }, 1000);
         }
+      }
       });
 
-      updateScore();
+  updateScore();
 
-      if (allCorrect) {
-        clearInterval(timerInterval);
+  if (allCorrect) {
+    clearInterval(timerInterval);
 
-        setTimeout(() => {
-          showFinalScreen(score, maxScore);
-        }, 1500);
-      } else {
-        const incorrectTargets = Array.from(targets).filter((target, index) => {
-          const block = target.querySelector(".block");
-          if (block) {
-            const blockId = block.id;
-            const expectedBlockId = `block-${index}`;
-            return blockId !== expectedBlockId;
-          }
-          return false;
-        });
-
-        const targetNames = incorrectTargets
-          .map((target) => target.querySelector(".target__name").textContent)
-          .join(", ");
-
-        alert(
-          `Ops! Apenas ${correctCount} de ${maxScore} blocos estão corretos.\n\nTargets incorretos: ${targetNames}\n\nOs blocos incorretos voltaram para suas posições originais. Tente novamente!`,
-        );
+    setTimeout(() => {
+      showFinalScreen(score, maxScore);
+    }, 1500);
+  } else {
+    const incorrectTargets = Array.from(targets).filter((target, index) => {
+      const block = target.querySelector(".block");
+      if (block) {
+        const blockId = block.id;
+        const expectedBlockId = `block-${index}`;
+        return blockId !== expectedBlockId;
       }
-    }
+      return false;
+    });
+
+    const targetNames = incorrectTargets
+      .map((target) => target.querySelector(".target__name").textContent)
+      .join(", ");
+
+    alert(
+      `Ops! Apenas ${correctCount} de ${maxScore} blocos estão corretos.\n\nTargets incorretos: ${targetNames}\n\nOs blocos incorretos voltaram para suas posições originais. Tente novamente!`,
+    );
+  }
+}
   });
 }
 
