@@ -162,7 +162,7 @@ const GAME_TIME_SECONDS = 60; // Mude para qualquer valor
 ### **1. Clone o Repositório**
 
 ```bash
-git clone [URL_DO_REPOSITORIO]
+git clone https://github.com/gustavommcv/jogo-educativo
 cd jogo-educativo
 ```
 
@@ -188,7 +188,7 @@ http://localhost:8000
 
 ## 👨‍💻 Desenvolvedor
 
-**Nome**: [Gustavo Monnerat]  
+**Nome**: Gustavo Monnerat  
 **Cargo**: Candidato a Analista de Desenvolvimento Pleno
 
 ## 📄 Licença
