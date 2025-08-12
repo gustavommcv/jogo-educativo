@@ -129,6 +129,16 @@ main {
   background: #fffbe6;
 }
 
+.target.occupied {
+  border-color: var(--primary);
+  background: #e8f4fd;
+  border-style: solid;
+}
+
+.target.occupied .target__name {
+  color: var(--primary-dark);
+}
+
 .blocks-container.drag-over {
   border: 2px dashed var(--accent);
   background: #fffbe6;
@@ -152,6 +162,16 @@ main {
 
 .block:active {
   cursor: grabbing;
+}
+
+.target .block {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.target .block:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .dragging {

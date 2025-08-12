@@ -46,9 +46,23 @@ function startGame() {
     target.className = "target";
     target.innerHTML = `<h3 class="target__name">${etapa.nome}</h3>`;
 
+    const updateTargetState = () => {
+      const blocks = target.querySelectorAll(".block:not(.dragging)");
+      const hasBlock = blocks.length > 0;
+
+      target.classList.remove("occupied");
+
+      if (hasBlock) {
+        target.classList.add("occupied");
+      }
+    };
+
     target.addEventListener("dragover", (e) => {
       e.preventDefault();
-      target.classList.add("drag-over");
+
+      if (!target.classList.contains("occupied")) {
+        target.classList.add("drag-over");
+      }
     });
 
     target.addEventListener("dragleave", (e) => {
@@ -63,7 +77,25 @@ function startGame() {
 
       const blockId = e.dataTransfer.getData("text/plain");
       const block = document.getElementById(blockId);
+
+      const existingBlock = target.querySelector(".block");
+
+      if (existingBlock) {
+        existingBlock.remove();
+        blocksContainer.appendChild(existingBlock);
+      }
+
       target.appendChild(block);
+
+      updateTargetState();
+
+      block.addEventListener("click", () => {
+        target.removeChild(block);
+
+        blocksContainer.appendChild(block);
+
+        updateTargetState();
+      });
     });
 
     targetsContainer.appendChild(target);
@@ -83,6 +115,17 @@ function startGame() {
 
     block.addEventListener("dragend", () => {
       block.classList.remove("dragging");
+
+      document.querySelectorAll(".target").forEach((target) => {
+        const blocks = target.querySelectorAll(".block:not(.dragging)");
+        const hasBlock = blocks.length > 0;
+
+        if (hasBlock) {
+          target.classList.add("occupied");
+        } else {
+          target.classList.remove("occupied");
+        }
+      });
     });
 
     blocksContainer.appendChild(block);
