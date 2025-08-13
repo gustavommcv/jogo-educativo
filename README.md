@@ -56,6 +56,19 @@ Criar um jogo educativo simples sobre o "Ciclo da Água" que demonstre:
 - **Opções flexíveis**: tentar novamente ou voltar ao início
 
 #### **Feedback Visual**
+- **Efeitos Sonoros**
+
+  - Som curto de acerto ao validar um alvo correto
+  - Som curto de erro antes do retorno automático do bloco incorreto
+
+- **Confete de Vitória**
+
+  - Animação de confete ao finalizar com 100% de acertos
+  - Implementado via CDN (`canvas-confetti`) carregado em `index.html`
+
+- **Comportamento com Tempo Esgotado**
+
+  - Exibe um overlay com a pontuação parcial e a lista de alvos pendentes/incorretos
 
 - **Estados visuais distintos** para cada situação
 - **Transições suaves** entre estados
@@ -100,11 +113,13 @@ Criar um jogo educativo simples sobre o "Ciclo da Água" que demonstre:
 - **Clique em "Verificar"** quando todos os targets estiverem preenchidos
 - **Blocos corretos**: Ficam verdes e travados
 - **Blocos incorretos**: Voltam automaticamente para posição original
+ - Não é possível substituir um bloco que já esteja correto e travado no alvo
 
 ### **4. Conclusão**
 
 - **Sucesso**: Tela final com pontuação e parabéns
-- **Tempo esgotado**: Opções para tentar novamente ou voltar ao início
+- **Tempo esgotado**: Mostra pontuação parcial e a lista de alvos pendentes/incorretos, com opções para tentar novamente ou voltar ao início
+- **Tempo esgotado com tudo correto**: Tela final normal é exibida
 
 ## 🔧 Configuração e Personalização
 
@@ -185,6 +200,8 @@ php -S localhost:8000
 ### **3. Acesse no Navegador**
 
 http://localhost:8000
+
+Observação: a animação de confete depende do CDN. Se estiver offline, apenas os efeitos sonoros e a lógica de jogo funcionarão normalmente.
 
 ## 👨‍💻 Desenvolvedor
 
