@@ -27,6 +27,54 @@ function startGame() {
   let score = 0;
   const maxScore = gameData.etapas.length;
 
+  let audioContext;
+  const getAudioContext = () => {
+    if (!audioContext) {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioContext.state === "suspended") {
+      audioContext.resume();
+    }
+    return audioContext;
+  };
+
+  const playTone = (frequency, durationMs, type = "sine", volume = 0.08) => {
+    try {
+      const ctx = getAudioContext();
+      const oscillator = ctx.createOscillator();
+      const gain = ctx.createGain();
+      gain.gain.value = volume;
+      oscillator.type = type;
+      oscillator.frequency.setValueAtTime(frequency, ctx.currentTime);
+      oscillator.connect(gain);
+      gain.connect(ctx.destination);
+      oscillator.start();
+      oscillator.stop(ctx.currentTime + durationMs / 1000);
+      oscillator.onended = () => {
+        try {
+          oscillator.disconnect();
+          gain.disconnect();
+        } catch (_) {}
+      };
+    } catch (_) {}
+  };
+
+  const playSuccess = () => {
+    playTone(740, 120, "sine", 0.09);
+    setTimeout(() => playTone(880, 150, "sine", 0.09), 90);
+  };
+
+  const playError = () => {
+    playTone(220, 100, "square", 0.07);
+    setTimeout(() => playTone(180, 180, "square", 0.07), 80);
+  };
+
+  const playVictory = () => {
+    playTone(523.25, 120, "sine", 0.1);
+    setTimeout(() => playTone(659.25, 140, "sine", 0.1), 110);
+    setTimeout(() => playTone(783.99, 180, "sine", 0.1), 240);
+  };
+
   const scoreDisplay = document.createElement("div");
   scoreDisplay.className = "score-display";
   scoreDisplay.innerHTML = `<span>Pontuação: ${score}/${maxScore}</span>`;
@@ -105,6 +153,9 @@ function startGame() {
   const showTimeUpOptions = () => {
     const { correctCount, incorrectTargets, allCorrect } = evaluateGame();
     if (allCorrect) {
+      try {
+        playVictory();
+      } catch (_) {}
       showFinalScreen(correctCount, maxScore);
       return;
     }
@@ -400,12 +451,14 @@ function startGame() {
             if (!target.classList.contains("was-correct")) {
               score++;
               target.classList.add("was-correct");
+              playSuccess();
             }
           } else {
             allCorrect = false;
             target.classList.add("incorrect");
             target.classList.remove("correct");
 
+            playError();
             setTimeout(() => {
               target.removeChild(block);
               blocksContainer.appendChild(block);
@@ -429,6 +482,9 @@ function startGame() {
         setTimeout(() => {
           showFinalScreen(score, maxScore);
         }, 1500);
+        try {
+          playVictory();
+        } catch (_) {}
       } else {
         const incorrectTargets = Array.from(targets).filter((target, index) => {
           const block = target.querySelector(".block");
