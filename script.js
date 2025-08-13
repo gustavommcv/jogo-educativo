@@ -45,7 +45,9 @@ function startGame() {
     let correctCount = 0;
     const incorrectTargets = [];
     targets.forEach((target, index) => {
-      const name = target.querySelector(".target__name")?.textContent || `Target ${index + 1}`;
+      const name =
+        target.querySelector(".target__name")?.textContent ||
+        `Target ${index + 1}`;
       const block = target.querySelector(".block");
       const expectedBlockId = `block-${index}`;
       if (!block) {
@@ -58,7 +60,12 @@ function startGame() {
         incorrectTargets.push(name);
       }
     });
-    return { correctCount, incorrectTargets, max: maxScore, allCorrect: correctCount === maxScore };
+    return {
+      correctCount,
+      incorrectTargets,
+      max: maxScore,
+      allCorrect: correctCount === maxScore,
+    };
   };
 
   const updateTimer = () => {
@@ -254,7 +261,9 @@ function startGame() {
     const block = document.getElementById(blockId);
     const sourceIndex = block?.dataset?.sourceTargetIndex;
     if (sourceIndex !== undefined && sourceIndex !== "") {
-      const sourceTarget = document.querySelector(`.target[data-target-index="${sourceIndex}"]`);
+      const sourceTarget = document.querySelector(
+        `.target[data-target-index="${sourceIndex}"]`,
+      );
       if (sourceTarget) {
         sourceTarget.classList.remove("correct", "incorrect");
         updateTargetState(sourceTarget);
@@ -273,7 +282,9 @@ function startGame() {
 
     target.addEventListener("dragover", (e) => {
       const existingBlock = target.querySelector(".block");
-      const isLocked = !!(existingBlock && existingBlock.classList.contains("locked"));
+      const isLocked = !!(
+        existingBlock && existingBlock.classList.contains("locked")
+      );
       if (isLocked) {
         return;
       }
@@ -295,7 +306,7 @@ function startGame() {
 
       const blockId = e.dataTransfer.getData("text/plain");
       const block = document.getElementById(blockId);
-      
+
       const lockedExisting = target.querySelector(".block.locked");
       if (lockedExisting) {
         return;
@@ -310,7 +321,7 @@ function startGame() {
         existingBlock.draggable = true;
         existingBlock.style.cursor = "grab";
       }
-      
+
       target.classList.remove("correct", "incorrect");
       target.appendChild(block);
       updateTargetState(target);
@@ -465,4 +476,29 @@ function showFinalScreen(score, maxScore) {
   finalScreen.querySelector(".restart-button").addEventListener("click", () => {
     location.reload();
   });
+
+  if (typeof confetti === "function" && score === maxScore) {
+    try {
+      const duration = 2000;
+      const end = Date.now() + duration;
+      const defaults = {
+        startVelocity: 35,
+        spread: 360,
+        ticks: 60,
+        zIndex: 1001,
+      };
+
+      const interval = setInterval(function () {
+        const timeLeft = end - Date.now();
+
+        if (timeLeft <= 0) {
+          return clearInterval(interval);
+        }
+
+        const particleCount = 50 * (timeLeft / duration);
+        confetti({ ...defaults, particleCount, origin: { x: 0, y: 0.6 } });
+        confetti({ ...defaults, particleCount, origin: { x: 1, y: 0.6 } });
+      }, 250);
+    } catch (_) {}
+  }
 }
