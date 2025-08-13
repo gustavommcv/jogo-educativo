@@ -216,15 +216,31 @@ function startGame() {
 
     const blockId = e.dataTransfer.getData("text/plain");
     const block = document.getElementById(blockId);
+    const sourceIndex = block?.dataset?.sourceTargetIndex;
+    if (sourceIndex !== undefined && sourceIndex !== "") {
+      const sourceTarget = document.querySelector(`.target[data-target-index="${sourceIndex}"]`);
+      if (sourceTarget) {
+        sourceTarget.classList.remove("correct", "incorrect");
+        updateTargetState(sourceTarget);
+      }
+      delete block.dataset.sourceTargetIndex;
+    }
     blocksContainer.appendChild(block);
+    checkAllTargetsFilled();
   });
 
-  gameData.etapas.forEach((etapa) => {
+  gameData.etapas.forEach((etapa, targetIndex) => {
     const target = document.createElement("div");
     target.className = "target";
     target.innerHTML = `<h3 class="target__name">${etapa.nome}</h3>`;
+    target.dataset.targetIndex = String(targetIndex);
 
     target.addEventListener("dragover", (e) => {
+      const existingBlock = target.querySelector(".block");
+      const isLocked = !!(existingBlock && existingBlock.classList.contains("locked"));
+      if (isLocked) {
+        return;
+      }
       e.preventDefault();
       if (!target.classList.contains("occupied")) {
         target.classList.add("drag-over");
@@ -243,6 +259,11 @@ function startGame() {
 
       const blockId = e.dataTransfer.getData("text/plain");
       const block = document.getElementById(blockId);
+      
+      const lockedExisting = target.querySelector(".block.locked");
+      if (lockedExisting) {
+        return;
+      }
 
       const existingBlock = target.querySelector(".block");
       if (existingBlock) {
@@ -253,11 +274,15 @@ function startGame() {
         existingBlock.draggable = true;
         existingBlock.style.cursor = "grab";
       }
-
+      
+      target.classList.remove("correct", "incorrect");
       target.appendChild(block);
       updateTargetState(target);
 
-      block.addEventListener("click", () => {
+      if (block._targetClickHandler) {
+        block.removeEventListener("click", block._targetClickHandler);
+      }
+      block._targetClickHandler = () => {
         if (!block.classList.contains("locked")) {
           target.removeChild(block);
           blocksContainer.appendChild(block);
@@ -266,9 +291,11 @@ function startGame() {
           block.draggable = true;
           block.style.cursor = "grab";
 
+          target.classList.remove("correct", "incorrect");
           updateTargetState(target);
         }
-      });
+      };
+      block.addEventListener("click", block._targetClickHandler);
     });
 
     targetsContainer.appendChild(target);
@@ -284,6 +311,12 @@ function startGame() {
     block.addEventListener("dragstart", (e) => {
       e.dataTransfer.setData("text/plain", block.id);
       block.classList.add("dragging");
+      const parent = block.parentElement;
+      if (parent && parent.classList.contains("target")) {
+        block.dataset.sourceTargetIndex = parent.dataset.targetIndex || "";
+      } else {
+        delete block.dataset.sourceTargetIndex;
+      }
     });
 
     block.addEventListener("dragend", () => {
