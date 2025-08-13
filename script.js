@@ -40,6 +40,27 @@ function startGame() {
   let timeLeft = GAME_TIME_SECONDS;
   let timerInterval;
 
+  const evaluateGame = () => {
+    const targets = document.querySelectorAll(".target");
+    let correctCount = 0;
+    const incorrectTargets = [];
+    targets.forEach((target, index) => {
+      const name = target.querySelector(".target__name")?.textContent || `Target ${index + 1}`;
+      const block = target.querySelector(".block");
+      const expectedBlockId = `block-${index}`;
+      if (!block) {
+        incorrectTargets.push(name);
+        return;
+      }
+      if (block.id === expectedBlockId) {
+        correctCount++;
+      } else {
+        incorrectTargets.push(name);
+      }
+    });
+    return { correctCount, incorrectTargets, max: maxScore, allCorrect: correctCount === maxScore };
+  };
+
   const updateTimer = () => {
     if (timeLeft < 0) {
       timeLeft = 0;
@@ -75,12 +96,27 @@ function startGame() {
   };
 
   const showTimeUpOptions = () => {
+    const { correctCount, incorrectTargets, allCorrect } = evaluateGame();
+    if (allCorrect) {
+      showFinalScreen(correctCount, maxScore);
+      return;
+    }
     const timeUpOverlay = document.createElement("div");
     timeUpOverlay.className = "time-up-overlay";
+    const percentage = Math.round((correctCount / maxScore) * 100);
+    const incorrectList = incorrectTargets.length
+      ? `<p class="final-message">Pendentes/incorretos: ${incorrectTargets.join(", ")}</p>`
+      : "";
     timeUpOverlay.innerHTML = `
       <div class="time-up-content">
         <h2>⏰ Tempo Esgotado!</h2>
-        <p>Você não conseguiu completar o jogo a tempo.</p>
+        <p>Você acertou ${correctCount} de ${maxScore}.</p>
+        <div class="final-score">
+          <h2>Pontuação</h2>
+          <p class="score-number">${correctCount}/${maxScore}</p>
+          <p class="score-percentage">${percentage}%</p>
+        </div>
+        ${incorrectList}
         <div class="time-up-buttons">
           <button class="app-button try-again-button" type="button">Tentar Novamente</button>
           <button class="app-button home-button" type="button">Voltar ao Início</button>
@@ -354,54 +390,54 @@ function startGame() {
               score++;
               target.classList.add("was-correct");
             }
-        } else {
-          allCorrect = false;
-          target.classList.add("incorrect");
-          target.classList.remove("correct");
+          } else {
+            allCorrect = false;
+            target.classList.add("incorrect");
+            target.classList.remove("correct");
 
-          setTimeout(() => {
-            target.removeChild(block);
-            blocksContainer.appendChild(block);
+            setTimeout(() => {
+              target.removeChild(block);
+              blocksContainer.appendChild(block);
 
-            block.classList.remove("locked", "was-correct", "dragging");
-            block.draggable = true;
-            block.style.cursor = "grab";
+              block.classList.remove("locked", "was-correct", "dragging");
+              block.draggable = true;
+              block.style.cursor = "grab";
 
-            target.classList.remove("incorrect", "occupied");
-            updateTargetState(target);
-          }, 1000);
+              target.classList.remove("incorrect", "occupied");
+              updateTargetState(target);
+            }, 1000);
+          }
         }
-      }
       });
 
-  updateScore();
+      updateScore();
 
-  if (allCorrect) {
-    clearInterval(timerInterval);
+      if (allCorrect) {
+        clearInterval(timerInterval);
 
-    setTimeout(() => {
-      showFinalScreen(score, maxScore);
-    }, 1500);
-  } else {
-    const incorrectTargets = Array.from(targets).filter((target, index) => {
-      const block = target.querySelector(".block");
-      if (block) {
-        const blockId = block.id;
-        const expectedBlockId = `block-${index}`;
-        return blockId !== expectedBlockId;
+        setTimeout(() => {
+          showFinalScreen(score, maxScore);
+        }, 1500);
+      } else {
+        const incorrectTargets = Array.from(targets).filter((target, index) => {
+          const block = target.querySelector(".block");
+          if (block) {
+            const blockId = block.id;
+            const expectedBlockId = `block-${index}`;
+            return blockId !== expectedBlockId;
+          }
+          return false;
+        });
+
+        const targetNames = incorrectTargets
+          .map((target) => target.querySelector(".target__name").textContent)
+          .join(", ");
+
+        alert(
+          `Ops! Apenas ${correctCount} de ${maxScore} blocos estão corretos.\n\nTargets incorretos: ${targetNames}\n\nOs blocos incorretos voltaram para suas posições originais. Tente novamente!`,
+        );
       }
-      return false;
-    });
-
-    const targetNames = incorrectTargets
-      .map((target) => target.querySelector(".target__name").textContent)
-      .join(", ");
-
-    alert(
-      `Ops! Apenas ${correctCount} de ${maxScore} blocos estão corretos.\n\nTargets incorretos: ${targetNames}\n\nOs blocos incorretos voltaram para suas posições originais. Tente novamente!`,
-    );
-  }
-}
+    }
   });
 }
 
